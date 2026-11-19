@@ -84,7 +84,13 @@ for (const name of shots) {
 }
 
 // The dossier is written last: the scorer rebuilds it from this /output and compares bytes.
-writeFileSync(join(out, 'dossier.json'), buildDossier(out, { text_max_bytes: TEXT_MAX_BYTES, screenshots: SCREENSHOT_CAPS, dashboard: { max_files: 400, max_bytes: 4_194_304 } }));
+// The gate refuses a dossier past 1.5 MiB, so fail loudly here instead of handing one in.
+const dossierBytes = buildDossier(out, { text_max_bytes: TEXT_MAX_BYTES, screenshots: SCREENSHOT_CAPS, dashboard: { max_files: 400, max_bytes: 4_194_304 } });
+if (dossierBytes.length > 1_572_864) {
+  process.stderr.write(`token radar: dossier.json is ${dossierBytes.length} bytes, over the gate's 1,572,864: shrink the screenshots or the dashboard source\n`);
+  process.exit(1);
+}
+writeFileSync(join(out, 'dossier.json'), dossierBytes);
 
 process.stdout.write(
   `token radar: ${snapshot.protocols.length} protocols, ${snapshot.watchlist.length} on the watchlist, ${board.length} rows scored (${radar.early_size} early, ${radar.live_size} live set aside)\n` +

@@ -191,7 +191,7 @@ document.querySelectorAll('#board th.sortable').forEach((th) => th.addEventListe
   if (state.sort === k) state.dir = -state.dir;
   else { state.sort = k; state.dir = k === 'name' || k === 'cat' ? 1 : -1; }
   if (k === 'rank') state.dir = 1;
-  $('sort').value = ['rank', 'implied', 'tvl', 'chg', 'age', 'name'].includes(k) ? k : state.sort;
+  $('sort').value = ['rank', 'implied', 'tvl', 'chg', 'age', 'name', 'cat'].includes(k) ? k : state.sort;
   render();
 }));
 rowsEl.addEventListener('click', (e) => {
